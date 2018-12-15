@@ -34,6 +34,7 @@
 
         .table {
             border: 1px #ebebeb solid;
+            border-spacing: 0;
         }
 
         @media only screen and (min-width: 1200px) {
@@ -51,6 +52,9 @@
                 width: 100%;
             }
 
+            .issue {
+                display: none;
+            }
         }
 
         .search {
@@ -64,11 +68,9 @@
             margin-bottom: 1em;
         }
 
-        .tableHeader {
-            display: flex;
-            flex-flow: row nowrap;
-            align-items: center;
-            padding: 0.5em;
+        table thead th {
+            text-align: left;
+            padding: 0.2em 0.4em 0.2em 0.4em;
 
             font-size: 1.25em;
             font-weight: bold;
@@ -77,30 +79,26 @@
             color: #44f;
         }
 
-        .tableRow {
-            display: flex;
-            flex-flow: row nowrap;
-            align-items: center;
-            padding: 0.5em;
+        table tbody td {
+            padding: 0.2em 0.5em 0.2em 0.5em;
             font-size: 0.8em;
+            align-items: center;
         }
 
-        .tableRow:nth-child(odd) {
+        table tbody tr:nth-child(odd) {
             background: #f8fff8;
         }
 
-        .tableRow:nth-child(even) {
+        table tbody tr:nth-child(even) {
             background: #eaffea;
         }
 
-        .tableRow:hover {
+        table tbody tr:hover {
             background: #ffffff;
         }
 
 
-        .region {
-            flex-basis: 125px;
-        }
+        .region {}
 
         .region[data-region="NTSC"]::before {
             content: "🇺🇸";
@@ -123,6 +121,7 @@
             align-items: center;
             padding: 0.5em;
         }
+
         .fill div {
             flex-grow: 1;
             font-size: 1.5em;
@@ -130,17 +129,138 @@
             background: white;
         }
 
+        .fill .error {
+            color: red;
+        }
+
+        .fill .loading {}
+
+        .spinner {
+            -webkit-animation: rotator 1.4s linear infinite;
+            animation: rotator 1.4s linear infinite;
+        }
+
+        @-webkit-keyframes rotator {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(270deg);
+                transform: rotate(270deg);
+            }
+        }
+
+        @keyframes rotator {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(270deg);
+                transform: rotate(270deg);
+            }
+        }
+
+        .path {
+            stroke-dasharray: 187;
+            stroke-dashoffset: 0;
+            -webkit-transform-origin: center;
+            transform-origin: center;
+            -webkit-animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+            animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+        }
+
+        @-webkit-keyframes colors {
+            0% {
+                stroke: #4285F4;
+            }
+
+            25% {
+                stroke: #DE3E35;
+            }
+
+            50% {
+                stroke: #F7C223;
+            }
+
+            75% {
+                stroke: #1B9A59;
+            }
+
+            100% {
+                stroke: #4285F4;
+            }
+        }
+
+        @keyframes colors {
+            0% {
+                stroke: #4285F4;
+            }
+
+            25% {
+                stroke: #DE3E35;
+            }
+
+            50% {
+                stroke: #F7C223;
+            }
+
+            75% {
+                stroke: #1B9A59;
+            }
+
+            100% {
+                stroke: #4285F4;
+            }
+        }
+
+        @-webkit-keyframes dash {
+            0% {
+                stroke-dashoffset: 187;
+            }
+
+            50% {
+                stroke-dashoffset: 46.75;
+                -webkit-transform: rotate(135deg);
+                transform: rotate(135deg);
+            }
+
+            100% {
+                stroke-dashoffset: 187;
+                -webkit-transform: rotate(450deg);
+                transform: rotate(450deg);
+            }
+        }
+
+        @keyframes dash {
+            0% {
+                stroke-dashoffset: 187;
+            }
+
+            50% {
+                stroke-dashoffset: 46.75;
+                -webkit-transform: rotate(135deg);
+                transform: rotate(135deg);
+            }
+
+            100% {
+                stroke-dashoffset: 187;
+                -webkit-transform: rotate(450deg);
+                transform: rotate(450deg);
+            }
+        }
+
+
         .name {
-            flex-grow: 1;
+            width: 100%;
         }
 
-        .status {
-            flex-basis: 120px;
-        }
+        .status {}
 
-        .issue {
-            flex-basis: 100px;
-        }
+        .issue {}
 
         .buttonStatus {
             display: inline-block;
@@ -160,7 +280,7 @@
         }
 
         .buttonStatus.checked {
-            border:2px solid red;
+            border: 2px solid red;
         }
 
         .buttonStatus[data-status="Total"] {
@@ -200,13 +320,19 @@
             margin-left: 6px;
         }
 
+        .sortArrow {
+            visibility: hidden;
+        }
+
+        .sortArrow[data-active] {
+            visibility: visible;
+        }
 
         .statusBar {
             display: flex;
             flex-flow: row wrap;
             justify-content: flex-end;
         }
-
 
         .alphabet {
             display: flex;
@@ -252,41 +378,60 @@
 
 
             <div class="statusBar">
-                <div v-for="s in statuses" class="buttonStatus checkable" :data-status="s" v-bind:class="{ checked: s == status }" v-on:click="filterByStatus">{{ s }}</div>
+                <div v-for="s in statuses" class="buttonStatus checkable" :data-status="s" v-bind:class="{ checked: s == status }"
+                    v-on:click="filterByStatus">{{ s }}</div>
             </div>
 
 
             <input class="search" v-model="phrase" placeholder="Search ...">
             <button v-on:click="clearAll">Clear all</button>
 
+
             <div class="alphabet">
                 <div v-for="i in alphabet" :data-letter="i" v-bind:class="{ checkedLetter: i == letter }" v-on:click="filterByLetter">{{
                     i }}</div>
             </div>
 
-            <div class="table">
-                <div class="tableHeader">
-                    <div class="region" v-on:click="sort">Region<span v-if="sortBy == 'region'" :data-dir="sortDir"
-                            class="sortArrow"></span></div>
-                    <div class="name" v-on:click="sort">Name<span v-if="sortBy == 'name'" :data-dir="sortDir" class="sortArrow"></span></div>
-                    <div class="issue" v-on:click="sort">Issue<span v-if="sortBy == 'issue'" :data-dir="sortDir" class="sortArrow"></span></div>
-                    <div class="status" v-on:click="sort">Status<span v-if="sortBy == 'status'" :data-dir="sortDir"
-                            class="sortArrow"></span></div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="region" v-on:click="sort">Region<span :data-active="sortBy == 'region'" :data-dir="sortDir"
+                                class="sortArrow"></span></th>
+                        <th class="name" v-on:click="sort">Name<span :data-active="sortBy == 'name'" :data-dir="sortDir"
+                                class="sortArrow"></span></th>
+                        <th class="issue" v-on:click="sort">Issue<span :data-active="sortBy == 'issue'" :data-dir="sortDir"
+                                class="sortArrow"></span></th>
+                        <th class="status" v-on:click="sort">Status<span :data-active="sortBy == 'status'" :data-dir="sortDir"
+                                class="sortArrow"></span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="game in gameList">
+                        <td class="region" :data-region="game.region">{{ game.region }}</td>
+                        <td class="name">{{ game.name }}</td>
+                        <td class="issue">
+                            <a v-if="game.issue != null" :href="game.issue">Issue</a>
+                        </td>
+                        <td class="status">
+                            <div class="buttonStatus" :data-status="game.status">{{ game.status }}</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="fill" v-if="loading">
+                <div>
+                    <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+                    </svg>
                 </div>
-                <div class="tableRow" v-for="game in gameList">
-                    <div class="region" :data-region="game.region">{{ game.region }}</div>
-                    <div class="name">{{ game.name }}</div>
-                    <div class="issue">
-                        <a v-if="game.issue != null" :href="game.issue">Issue</a>
-                    </div>
-                    <div class="status">
-                        <div class="buttonStatus" :data-status="game.status">{{ game.status }}</div>
-                    </div>
+            </div>
+            <div class="fill" v-else-if="error">
+                <div class="error">
+                    {{ error }}
                 </div>
-
-                <div class="fill" v-if="!gameList.length">
-                    <div>No results</div>
-                </div>
+            </div>
+            <div class="fill" v-else-if="!gameList.length">
+                <div>No results</div>
             </div>
         </div>
     </div>
@@ -299,6 +444,8 @@
                 statuses: [
                     "Playable", "InGame", "IntroMenus", "Broken", "Unknown"
                 ],
+                loading: false,
+                error: null,
                 sortDir: '',
                 sortBy: "name",
                 phrase: null,
@@ -321,6 +468,8 @@
 
             methods: {
                 fetchGames: function () {
+                    this.error = null
+                    this.loading = true
                     axios.get(API + "/games", {
                         params: {
                             sort: this.sortDir + this.sortBy,
@@ -330,12 +479,16 @@
                         }
                     })
                         .then(response => this.gameList = response.data)
-                        .catch(e => console.log(e))
+                        .catch(e => this.error = e.response.data.message)
+                        .then(_ => this.loading = false)
                 },
                 fetchSummary: function () {
+                    this.error = null
+                    this.loading = true
                     axios.get(API + "/games/summary")
                         .then(response => this.summary = response.data)
-                        .catch(e => console.log(e))
+                        .catch(e => this.error = e.response.data.message)
+                        .then(_ => this.loading = false)
                 },
                 sort: function (e) {
                     const clicked = e.target.className
