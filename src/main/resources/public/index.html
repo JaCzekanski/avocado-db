@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Avocado Compability list</title>
+    <script src="js/vue.js"></script>
+    <script src="js/axios.min.js"></script>
+
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: #44f;
+            font-weight: bold;
+        }
+
+        body {
+            margin: 2em;
+            padding: 0;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #center {}
+
+        .table {
+            border: 1px #ebebeb solid;
+        }
+
+        @media only screen and (min-width: 1200px) {
+            .table {
+                width: 1000px;
+            }
+        }
+
+        @media only screen and (max-width: 1200px) {
+            #center {
+                width: 100%;
+            }
+
+            .table {
+                width: 100%;
+            }
+
+        }
+
+        .search {
+            width: 90%;
+            margin-bottom: 16px;
+            margin-top: 16px;
+
+            color: inherit;
+            font: inherit;
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
+
+        .tableHeader {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            padding: 0.5em;
+
+            font-size: 1.25em;
+            font-weight: bold;
+
+            cursor: pointer;
+            color: #44f;
+        }
+
+        .tableRow {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            padding: 0.5em;
+            font-size: 0.8em;
+        }
+
+        .tableRow:nth-child(odd) {
+            background: #f8fff8;
+        }
+
+        .tableRow:nth-child(even) {
+            background: #eaffea;
+        }
+
+        .tableRow:hover {
+            background: #ffffff;
+        }
+
+
+        .region {
+            flex-basis: 125px;
+        }
+
+        .region[data-region="NTSC"]::before {
+            content: "🇺🇸";
+            margin-right: 6px;
+        }
+
+        .region[data-region="NTSCJ"]::before {
+            content: "🇯🇵";
+            margin-right: 6px;
+        }
+
+        .region[data-region="PAL"]::before {
+            content: "🇪🇺";
+            margin-right: 6px;
+        }
+
+        .fill {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            padding: 0.5em;
+        }
+        .fill div {
+            flex-grow: 1;
+            font-size: 1.5em;
+            text-align: center;
+            background: white;
+        }
+
+        .name {
+            flex-grow: 1;
+        }
+
+        .status {
+            flex-basis: 120px;
+        }
+
+        .issue {
+            flex-basis: 100px;
+        }
+
+        .buttonStatus {
+            display: inline-block;
+
+            margin: 0 4px 0 4px;
+            border-radius: 4px;
+            color: white;
+            padding: .2em .2em;
+            width: 90px;
+            text-align: center;
+            font-size: 1.1em;
+            border: 2px solid transparent;
+        }
+
+        .buttonStatus.checkable {
+            cursor: pointer;
+        }
+
+        .buttonStatus.checked {
+            border:2px solid red;
+        }
+
+        .buttonStatus[data-status="Total"] {
+            color: black;
+        }
+
+        .buttonStatus[data-status="Playable"] {
+            background: #31BE6C;
+        }
+
+        .buttonStatus[data-status="InGame"] {
+            background: rgb(255, 242, 64);
+            color: black;
+        }
+
+        .buttonStatus[data-status="IntroMenus"] {
+            background: rgb(255, 143, 24);
+        }
+
+        .buttonStatus[data-status="Broken"] {
+            background: #E6594D;
+        }
+
+        .buttonStatus[data-status="Unknown"] {
+            background: #000000;
+        }
+
+        .sortArrow[data-dir=""]::before {
+            content: "🔺";
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        .sortArrow[data-dir="-"]::before {
+            content: "🔻";
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+
+        .statusBar {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-end;
+        }
+
+
+        .alphabet {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            font-size: 0.8em;
+        }
+
+        .alphabet div {
+            flex-grow: 1;
+            text-align: center;
+            vertical-align: middle;
+
+            font-size: 1.25em;
+            font-weight: bold;
+
+            padding: .5em 0 .5em 0;
+
+            cursor: pointer;
+            color: #44f;
+        }
+
+        .alphabet div:hover {
+            background: #eee;
+        }
+
+        .alphabet .checkedLetter {
+            color: #f44;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="center">
+            <h1>Avocado compability list</h1>
+
+            <h3>Summary</h3>
+            <div v-for="(value, key) in summary">
+                <div style="margin-bottom:4px;" class="buttonStatus" :data-status="key">{{ key }}</div> {{ value }} ({{
+                parseFloat((value / summary['Total']) * 100).toFixed(2) }}%)
+            </div>
+
+
+            <div class="statusBar">
+                <div v-for="s in statuses" class="buttonStatus checkable" :data-status="s" v-bind:class="{ checked: s == status }" v-on:click="filterByStatus">{{ s }}</div>
+            </div>
+
+
+            <input class="search" v-model="phrase" placeholder="Search ...">
+            <button v-on:click="clearAll">Clear all</button>
+
+            <div class="alphabet">
+                <div v-for="i in alphabet" :data-letter="i" v-bind:class="{ checkedLetter: i == letter }" v-on:click="filterByLetter">{{
+                    i }}</div>
+            </div>
+
+            <div class="table">
+                <div class="tableHeader">
+                    <div class="region" v-on:click="sort">Region<span v-if="sortBy == 'region'" :data-dir="sortDir"
+                            class="sortArrow"></span></div>
+                    <div class="name" v-on:click="sort">Name<span v-if="sortBy == 'name'" :data-dir="sortDir" class="sortArrow"></span></div>
+                    <div class="issue" v-on:click="sort">Issue<span v-if="sortBy == 'issue'" :data-dir="sortDir" class="sortArrow"></span></div>
+                    <div class="status" v-on:click="sort">Status<span v-if="sortBy == 'status'" :data-dir="sortDir"
+                            class="sortArrow"></span></div>
+                </div>
+                <div class="tableRow" v-for="game in gameList">
+                    <div class="region" :data-region="game.region">{{ game.region }}</div>
+                    <div class="name">{{ game.name }}</div>
+                    <div class="issue">
+                        <a v-if="game.issue != null" :href="game.issue">Issue</a>
+                    </div>
+                    <div class="status">
+                        <div class="buttonStatus" :data-status="game.status">{{ game.status }}</div>
+                    </div>
+                </div>
+
+                <div class="fill" v-if="!gameList.length">
+                    <div>No results</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://192.168.1.78:8080/api"
+        var app = new Vue({
+            el: '#app',
+            data: {
+                statuses: [
+                    "Playable", "InGame", "IntroMenus", "Broken", "Unknown"
+                ],
+                sortDir: '',
+                sortBy: "name",
+                phrase: null,
+                status: null,
+                letter: null,
+                summary: [],
+                gameList: [],
+                alphabet: [],
+            },
+
+            watch: {
+                phrase: 'fetchGames'
+            },
+
+            created: function () {
+                this.alphabet = this.generateAlphabet()
+                this.fetchSummary()
+                this.fetchGames()
+            },
+
+            methods: {
+                fetchGames: function () {
+                    axios.get(API + "/games", {
+                        params: {
+                            sort: this.sortDir + this.sortBy,
+                            letter: this.letter,
+                            phrase: this.phrase,
+                            status: this.status
+                        }
+                    })
+                        .then(response => this.gameList = response.data)
+                        .catch(e => console.log(e))
+                },
+                fetchSummary: function () {
+                    axios.get(API + "/games/summary")
+                        .then(response => this.summary = response.data)
+                        .catch(e => console.log(e))
+                },
+                sort: function (e) {
+                    const clicked = e.target.className
+                    if (clicked != this.sortBy) {
+                        this.sortDir = ''
+                    } else {
+                        this.sortDir = (this.sortDir == '') ? '-' : ''
+                    }
+                    this.sortBy = clicked
+
+                    this.fetchGames()
+                },
+                filterByLetter: function (e) {
+                    const clicked = e.target.dataset['letter']
+                    if (clicked == this.letter) {
+                        this.letter = null
+                    } else {
+                        this.letter = clicked
+                    }
+                    this.fetchGames()
+                },
+                filterByStatus: function (e) {
+                    const clicked = e.target.dataset['status']
+                    if (clicked == this.status) {
+                        this.status = null
+                    } else {
+                        this.status = clicked
+                    }
+                    this.fetchGames()
+                },
+                clearAll: function () {
+                    this.sortDir = ''
+                    this.sortBy = "name"
+                    this.phrase = null
+                    this.status = null
+                    this.letter = null
+                    this.fetchGames()
+                },
+
+                generateAlphabet: function () {
+                    let a = []
+
+                    for (var i = 0; i < 26; i++) {
+                        a.push(String.fromCharCode(65 + i))
+                    }
+
+                    return a
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
