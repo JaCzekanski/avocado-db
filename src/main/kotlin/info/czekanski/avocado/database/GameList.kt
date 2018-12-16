@@ -38,11 +38,7 @@ class GameList {
                 .trim()
 
             val issueNum = row.getOrNull(3)
-            val issueLink = if (issueNum != null) {
-                issueUrl + issueNum.toString().removePrefix("#")
-            } else {
-                null
-            }
+            val issueLink = issueNum?.toString()?.removePrefix("#")
 
             GameEntry(
                 name = name,

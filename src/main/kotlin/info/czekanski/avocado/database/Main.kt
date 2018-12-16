@@ -20,6 +20,7 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import kotlinx.coroutines.delay
 import java.text.DateFormat
 
 object Main {
@@ -28,7 +29,7 @@ object Main {
     fun main(args: Array<String>) {
         val games = GameList()
 
-        val server = embeddedServer(Netty, 8080) {
+        val server = embeddedServer(Netty, 8888) {
             install(DefaultHeaders) {
                 header("Access-Control-Allow-Origin", "*")
             }
@@ -86,8 +87,11 @@ object Main {
                         if (!letter.isLetterOrDigit()) {
                             throw ApiError("Invalid letter parameter")
                         }
-
-                        list = list.filter { it.name.startsWith(letter, ignoreCase = true) }
+                        if (letter == '0') {
+                            list = list.filter { it.name.first().isDigit() }
+                        } else {
+                            list = list.filter { it.name.startsWith(letter, ignoreCase = true) }
+                        }
                     }
 
                     if (!phraseQuery.isNullOrEmpty()) {
