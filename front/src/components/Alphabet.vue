@@ -2,6 +2,7 @@
   <div class="alphabet">
     <div
       v-for="i in alphabet"
+      :key="i"
       :data-letter="i"
       v-bind:class="{ checkedLetter: i == letter }"
       v-on:click="letterSelected"

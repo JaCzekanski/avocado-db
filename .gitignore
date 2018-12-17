@@ -31,3 +31,4 @@ build/
 kotlin-ultimate/
 src/main/resources/credentials.json
 tokens/
+StoredCredential

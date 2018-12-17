@@ -1,41 +1,62 @@
 <template>
   <div>
     <h3>Summary</h3>
-    <div class="summary">
-      <template v-for="(value, key) in summary">
-        <div><ButtonStatus :status="key"/></div>
-        <div>{{ value }}</div>
-        <div class="small">({{percent(value)}}%)</div>
-        <div class="chartBarBg" v-if="key != 'Total'">
-          <div class="chartBar" :data-status="key" :style="{width:percent(value) + '%'}"></div>
-        </div>
-      </template>
+    <div class="frame">
+      <div class="summary">
+        <template v-for="(value, key) in summary">
+          <div><ButtonStatus :status="key"/></div>
+          <div>{{ value }}</div>
+          <div class="small">({{percent(value)}}%)</div>
+          <div class="chartBarBg" v-if="key != 'Total'">
+            <div class="chartBar" :data-status="key" :style="{width:percent(value) + '%'}"></div>
+          </div>
+        </template>
+      </div>
+      <div class="overlay" v-if="loading">
+          <Spinner/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import ButtonStatus from "@/components/ButtonStatus";
-import Api from "@/common/api";
+import Spinner from "@/components/Spinner";
 
 export default {
   name: "Summary",
   data: () => ({
-    summary: {}
+    loading: false,
+    summary: {
+      "Playable": 0,
+      "InGame": 0,
+      "IntroMenus": 0,
+      "Broken": 0,
+      "Unknown": 0,
+      "Total": 0
+    }
   }),
   components: {
-    ButtonStatus
+    ButtonStatus,
+    Spinner
   },
   mounted() {
-    this.summary = this.fetchSummary();
+    this.fetchSummary();
   },
   methods: {
-    fetchSummary() {
-      Api.getSummary()
-        .then(response => (this.summary = response))
-        .catch(e => console.log(e));
+    async fetchSummary() {
+      this.loading = true
+      
+      try {
+        const {body: data} = await this.$http.get("/api/games/summary")
+
+        this.summary = data
+      } finally {
+        this.loading = false
+      }
     },
     percent(value) {
+      if (!this.summary["Total"]) return "0"
       return parseFloat((value / this.summary["Total"]) * 100).toFixed(2);
     }
   }
@@ -72,5 +93,22 @@ $chartHeight: 10px;
   height: $chartHeight;
   background: linear-gradient(to left, #a8dcff, #78c9ff);
   border-radius: $chartCornerRadius;
+}
+
+.frame {
+  position:relative;
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+
+  background: #ffffffa0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
 }
 </style>

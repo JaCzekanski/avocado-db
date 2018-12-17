@@ -43,7 +43,6 @@ import GameRow from "@/components/GameRow";
 import Spinner from "@/components/Spinner";
 import Summary from "@/components/Summary";
 import StatusBar from "@/components/StatusBar";
-import Api from "@/common/api";
 
 export default {
   name: "home",
@@ -78,18 +77,24 @@ export default {
   },
 
   methods: {
-    fetchGames: function() {
+    async fetchGames() {
       this.error = null;
       this.loading = true;
-      Api.getGames({
-        sort: this.sortDir + this.sortBy,
-        letter: this.letter,
-        phrase: this.phrase,
-        status: this.status
-      })
-        .then(response => (this.gameList = response))
-        .catch(e => (this.error = e.message))
-        .then(() => (this.loading = false));
+      try {
+        const {body: data} = await this.$http.get("/api/games", {params: {
+          sort: this.sortDir + this.sortBy,
+          letter: this.letter,
+          phrase: this.phrase,
+          status: this.status
+        }})
+
+        this.gameList = data
+      } catch (ex) {
+        this.gameList = []
+        this.error = ex.body.message
+      } finally {
+        this.loading = false
+      }
     },
     sort: function(e) {
       const clicked = e.currentTarget.dataset["column"];
