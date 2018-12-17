@@ -32,11 +32,12 @@ export default {
   margin: 0 4px 0 4px;
   border-radius: 4px;
   color: white;
-  padding: 0.2em 0.2em;
+  padding: 0.1em 0.1em;
   width: 80px;
   text-align: center;
   font-size: 10pt;
   font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
   border: 2px solid transparent;
 }
 
@@ -57,7 +58,7 @@ export default {
 }
 
 .buttonStatus[data-status="InGame"] {
-  background: rgb(255, 242, 64);
+  background: rgb(255, 251, 2);
   color: black;
 }
 

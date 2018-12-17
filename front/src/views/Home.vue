@@ -5,8 +5,10 @@
     <Summary/>
 
     <StatusBar v-on:clicked="status = $event"/>
-    <input class="search" v-model="phrase" placeholder="Search ...">
-    <button v-on:click="clearAll">Reset all</button>
+    <div class="searchBar">
+      <div><input class="search" v-model="phrase" placeholder="Search ..."></div>
+      <div><button v-on:click="clearAll">Reset all</button></div>
+    </div>
     <Alphabet v-on:selected="letter = $event"/>
 
     <table class="table">
@@ -37,7 +39,6 @@
 
 <script>
 import Alphabet from "@/components/Alphabet";
-import ButtonStatus from "@/components/ButtonStatus";
 import GameRow from "@/components/GameRow";
 import Spinner from "@/components/Spinner";
 import Summary from "@/components/Summary";
@@ -48,7 +49,6 @@ export default {
   name: "home",
   components: {
     Alphabet,
-    ButtonStatus,
     GameRow,
     Spinner,
     Summary,
@@ -92,7 +92,6 @@ export default {
         .then(() => (this.loading = false));
     },
     sort: function(e) {
-      console.log(e)
       const clicked = e.currentTarget.dataset["column"];
       if (clicked != this.sortBy) {
         this.sortDir = "";
@@ -121,14 +120,20 @@ export default {
   border-spacing: 0;
 }
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 800px) {
   .table {
-    width: 1000px;
+    width: 750px;
+  }
+  .home {
+    width: 750px;
   }
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 800px) {
   .table {
+    width: 100%;
+  }
+  .home {
     width: 100%;
   }
 
@@ -137,15 +142,17 @@ export default {
   }
 }
 
-.search {
-  width: 85%;
-  margin-bottom: 16px;
-  margin-top: 16px;
-
-  color: inherit;
-  font: inherit;
+.searchBar {
+  display:grid;
+  grid-template-columns: auto max-content;
+  column-gap: 2em;
   margin-top: 1em;
   margin-bottom: 1em;
+}
+.searchBar * {
+  color: inherit;
+  font: inherit;
+  width: 100%;
 }
 
 table th {

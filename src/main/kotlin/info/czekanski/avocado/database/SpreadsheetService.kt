@@ -5,6 +5,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -29,7 +30,7 @@ class SpreadsheetService {
             clientSecrets,
             listOf(SheetsScopes.SPREADSHEETS_READONLY)
         )
-            .setDataStoreFactory(FileDataStoreFactory(File("tokens")))
+            .setDataStoreFactory(FileDataStoreFactory(File(".")))
             .setAccessType("offline")
             .build()
         val receiver = LocalServerReceiver.Builder().setPort(8888).build()

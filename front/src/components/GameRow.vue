@@ -3,7 +3,7 @@
     <td class="region" :data-region="game.region">
       <RegionFlag :region="game.region"/>{{ game.region }}
     </td>
-    <td class="name">{{ game.name }}</td>
+    <td class="name"><a :href="redumpUrl(game)">{{ game.name }}</a></td>
     <td class="issue">
       <a v-if="game.issue != null" :href="issueUrl(game.issue)">#{{game.issue}}</a>
     </td>
@@ -27,13 +27,23 @@ export default {
     RegionFlag
   },
   methods: {
+    redumpUrl(game) {
+      let region = ""
+      if (game.region != "UNKNOWN") {
+        region = "/region/" 
+        if (game.region == "PAL") region += "Eu"
+        else if (game.region == "NTSC") region += "Am"
+        else if (game.region == "NTSCJ") region += "As"
+      }
+      let quicksearch = "/quicksearch/" +game.name.split(" ").join("-")
+      return "http://redump.org/discs/system/psx" + quicksearch + region
+    },
     issueUrl(issueNum) {
       return "https://github.com/JaCzekanski/Avocado/issues/" + issueNum;
     }
   }
 };
 </script>
-
 
 <style lang="scss" scoped>
 table td {
