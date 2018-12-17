@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import ButtonStatus from "@/components/ButtonStatus";
-import Spinner from "@/components/Spinner";
+import ButtonStatus from "@/components/common/ButtonStatus";
+import Spinner from "@/components/common/Spinner";
 
 export default {
   name: "Summary",

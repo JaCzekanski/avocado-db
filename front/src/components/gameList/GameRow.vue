@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import ButtonStatus from "@/components/ButtonStatus";
-import RegionFlag from "@/components/RegionFlag";
+import ButtonStatus from "@/components/common/ButtonStatus";
+import RegionFlag from "./RegionFlag";
 
 export default {
   name: "GameRow",

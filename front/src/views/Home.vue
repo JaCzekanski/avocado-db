@@ -1,234 +1,53 @@
 <template>
   <div class="home">
-    <h1>Avocado compability list</h1>
+    <div class="title">Avocado compability list</div>
+    <div class="desc">Links: 
+      <a href="https://github.com/JaCzekanski/Avocado">Avocado</a>
+      <a href="https://github.com/JaCzekanski/avocado-db">avocado-db</a>
+      <a href="https://discord.gg/ATEJApR">Discord</a>
+    </div>
 
     <Summary/>
-
-    <StatusBar v-on:clicked="status = $event"/>
-    <div class="searchBar">
-      <div><input class="search" v-model="phrase" placeholder="Search ..."></div>
-      <div><button v-on:click="clearAll">Reset all</button></div>
-    </div>
-    <Alphabet v-on:selected="letter = $event"/>
-
-    <table class="table">
-      <tr>
-        <th
-          v-for="col in columns"
-          v-bind:class="col"
-          :key="col"
-          :data-column="col"
-          @click="sort"
-        >
-          {{col}}<span :data-active="sortBy == col" :data-dir="sortDir" class="sortArrow"></span>
-        </th>
-      </tr>
-      <GameRow v-for="game in gameList" :key="game.name" :game="game"/>
-    </table>
-    <div class="fill" v-if="loading">
-      <div><Spinner/></div>
-    </div>
-    <div class="fill" v-else-if="error">
-      <div class="error">{{ error }}</div>
-    </div>
-    <div class="fill" v-else-if="!gameList.length">
-      <div>No results</div>
-    </div>
+    <GameList/>
   </div>
 </template>
 
 <script>
-import Alphabet from "@/components/Alphabet";
-import GameRow from "@/components/GameRow";
-import Spinner from "@/components/Spinner";
-import Summary from "@/components/Summary";
-import StatusBar from "@/components/StatusBar";
+import Summary from "@/components/summary/Summary";
+import GameList from "@/components/gameList/GameList";
 
 export default {
   name: "home",
   components: {
-    Alphabet,
-    GameRow,
-    Spinner,
     Summary,
-    StatusBar
+    GameList
   },
   data: () => ({
-    columns: ["region", "name", "issue", "status"],
-    loading: false,
-    error: null,
-    sortDir: "",
-    sortBy: "name",
-    phrase: null,
-    status: null,
-    letter: null,
-    summary: [],
-    gameList: []
-  }),
-
-  watch: {
-    phrase: "fetchGames",
-    letter: "fetchGames",
-    status: "fetchGames"
-  },
-
-  created: function() {
-    this.fetchGames();
-  },
-
-  methods: {
-    async fetchGames() {
-      this.error = null;
-      this.loading = true;
-      try {
-        const {body: data} = await this.$http.get("/api/games", {params: {
-          sort: this.sortDir + this.sortBy,
-          letter: this.letter,
-          phrase: this.phrase,
-          status: this.status
-        }})
-
-        this.gameList = data
-      } catch (ex) {
-        this.gameList = []
-        this.error = ex.body.message
-      } finally {
-        this.loading = false
-      }
-    },
-    sort: function(e) {
-      const clicked = e.currentTarget.dataset["column"];
-      if (clicked != this.sortBy) {
-        this.sortDir = "";
-      } else {
-        this.sortDir = this.sortDir == "" ? "-" : "";
-      }
-      this.sortBy = clicked;
-
-      this.fetchGames();
-    },
-    clearAll: function() {
-      this.sortDir = "";
-      this.sortBy = "name";
-      this.phrase = null;
-      this.status = null;
-      this.letter = null;
-      this.fetchGames();
-    }
-  }
+  })
 };
 </script>
 
-<style>
-.table {
-  border: 1px #ebebeb solid;
-  border-spacing: 0;
-}
-
+<style lang="scss" scoped>
 @media only screen and (min-width: 800px) {
-  .table {
-    width: 750px;
-  }
   .home {
     width: 750px;
   }
 }
 
 @media only screen and (max-width: 800px) {
-  .table {
-    width: 100%;
-  }
   .home {
     width: 100%;
   }
-
-  .issue {
-    display: none;
-  }
 }
 
-.searchBar {
-  display:grid;
-  grid-template-columns: auto max-content;
-  column-gap: 2em;
-  margin-top: 1em;
-  margin-bottom: 1em;
+.title {
+  font-size: 36pt;
 }
-.searchBar * {
-  color: inherit;
-  font: inherit;
-  width: 100%;
+.desc {
+  margin-top: 8px;
 }
-
-table th {
-  text-align: left;
-  padding: 0.2em 0.4em 0.2em 0.4em;
-
-  font-size: 1.25em;
-  font-weight: bold;
-
-  cursor: pointer;
-  color: #44f;
-
-  user-select: none;
-}
-
-table th:hover {
-  background: #eeeeee;
-}
-
-table th:first-letter {
-  text-transform: capitalize;
-}
-
-.fill {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  padding: 0.5em;
-}
-
-.fill div {
-  flex-grow: 1;
-  font-size: 1.5em;
-  text-align: center;
-  background: white;
-}
-
-.fill .error {
-  color: red;
-}
-
-.region {
-}
-
-.name {
-  width: 100%;
-}
-
-.status {
-}
-
-.issue {
-}
-
-.sortArrow[data-dir=""]::before {
-  content: "🔺";
-  font-size: 12px;
-  margin-left: 6px;
-}
-
-.sortArrow[data-dir="-"]::before {
-  content: "🔻";
-  font-size: 12px;
-  margin-left: 6px;
-}
-
-.sortArrow {
-  visibility: hidden;
-}
-
-.sortArrow[data-active] {
-  visibility: visible;
+.desc a {
+  margin-left:8px;
+  margin-right:8px;
 }
 </style>

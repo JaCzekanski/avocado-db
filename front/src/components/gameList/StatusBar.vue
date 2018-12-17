@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import ButtonStatus from "@/components/ButtonStatus";
+import ButtonStatus from "@/components/common/ButtonStatus";
 
 export default {
   name: "StatusBar",

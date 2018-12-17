@@ -1,10 +1,11 @@
-package info.czekanski.avocado.database
+package info.czekanski.avocado.database.provider
 
 import info.czekanski.avocado.database.model.GameEntry
 import info.czekanski.avocado.database.model.Region
 import info.czekanski.avocado.database.model.Status
+import info.czekanski.avocado.database.service.SpreadsheetService
 
-class GameList {
+class GameListProvider {
     private val service = SpreadsheetService()
     private val spreadsheetId = "1iih6wONV4EunFpHYkqC0fALjb10xZQTObC1mkIWSGXA"
     private val issueUrl = "https://github.com/JaCzekanski/Avocado/issues/"
