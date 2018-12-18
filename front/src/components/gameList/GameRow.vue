@@ -4,8 +4,14 @@
       <RegionFlag :region="game.region"/>{{ game.region }}
     </td>
     <td class="name"><a :href="redumpUrl(game)">{{ game.name }}</a></td>
+    <td class="updated">
+      {{ formatDate(game.updated) }}
+    </td>
     <td class="issue">
       <a v-if="game.issue != null" :href="issueUrl(game.issue)">#{{game.issue}}</a>
+    </td>
+    <td class="build">
+      <a v-if="game.build" :href="commitUrl(game.build)">{{game.build}}</a>
     </td>
     <td class="status">
       <ButtonStatus :status="game.status"/>
@@ -14,8 +20,11 @@
 </template>
 
 <script>
+import Moment from "moment";
 import ButtonStatus from "@/components/common/ButtonStatus";
 import RegionFlag from "./RegionFlag";
+
+const PROJECT_URL = "https://github.com/JaCzekanski/Avocado"
 
 export default {
   name: "GameRow",
@@ -39,7 +48,14 @@ export default {
       return "http://redump.org/discs/system/psx" + quicksearch + region
     },
     issueUrl(issueNum) {
-      return "https://github.com/JaCzekanski/Avocado/issues/" + issueNum;
+      return `${PROJECT_URL}/issues/${issueNum}`
+    },
+    commitUrl(commit) {
+      return `${PROJECT_URL}/commit/${commit}`;
+    },
+    formatDate(date) {
+      if (date == null) return ""
+      return Moment(date).format("YYYY/MM/DD")
     }
   }
 };

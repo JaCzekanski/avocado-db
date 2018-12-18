@@ -19,15 +19,16 @@ import io.ktor.http.withCharset
 import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.routing
-import java.text.DateFormat
 
 fun Application.main() {
-    val games = GameListProvider()
+    val gameListProvider = GameListProvider()
+
+    gameListProvider.refreshPeriodically()
 
     install(CallLogging)
     install(ContentNegotiation) {
         gson {
-            setDateFormat(DateFormat.LONG)
+            setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             setPrettyPrinting()
             serializeNulls()
         }
@@ -56,7 +57,7 @@ fun Application.main() {
             val phraseQuery = call.request.queryParameters["phrase"]
             val letterQuery = call.request.queryParameters["letter"]
 
-            var list = games.list
+            var list: List<GameEntry> = gameListProvider.getGameList()
 
             if (!statusQuery.isNullOrEmpty()) {
                 val status = Status.fromString(statusQuery)
@@ -93,6 +94,7 @@ fun Application.main() {
                     "name" -> it.name
                     "status" -> it.status
                     "region" -> it.region
+                    "updated" -> it.updated
                     "build" -> it.build
                     "issue" -> it.issue
                     else -> throw ApiError("Invalid sort field")
@@ -107,7 +109,7 @@ fun Application.main() {
             call.respond(list)
         }
         get("/api/games/summary") {
-            val list = games.list
+            val list = gameListProvider.getGameList()
             val summary = mutableMapOf<String, Int>()
 
             Status.values().forEach { status ->

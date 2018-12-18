@@ -7,7 +7,7 @@
       <div><button v-on:click="clearAll">Reset all</button></div>
     </div>
 
-    <Alphabet v-on:selected="letter = $event"/>
+    <Alphabet model="letter = $event"/>
 
     <table class="gameTable">
       <tr>
@@ -47,7 +47,7 @@ export default {
     StatusBar
   },
   data: () => ({
-    columns: ["region", "name", "issue", "status"],
+    columns: ["region", "name", "updated", "issue", "build", "status"],
     loading: false,
     error: null,
     sortDir: "",
@@ -111,23 +111,29 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .gameTable {
   border: 1px #ebebeb solid;
   border-spacing: 0;
 }
 
-@media only screen and (min-width: 800px) {
+@media only screen and (min-width: 950px) {
   .gameTable {
-    width: 750px;
+    width: 900px;
   }
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 950px) {
   .gameTable {
     width: 100%;
   }
+  .updated {
+    display:none;
+  }
   .issue {
+    display: none;
+  }
+  .build {
     display: none;
   }
 }

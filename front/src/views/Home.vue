@@ -28,13 +28,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@media only screen and (min-width: 800px) {
+@media only screen and (min-width: 950px) {
   .home {
-    width: 750px;
+    width: 900px;
   }
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 950px) {
   .home {
     width: 100%;
   }
