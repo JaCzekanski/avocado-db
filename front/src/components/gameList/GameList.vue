@@ -1,23 +1,21 @@
 <template>
   <div>
     <StatusBar v-on:clicked="status = $event"/>
-    
+
     <div class="searchBar">
-      <div><input class="search" v-model="phrase" placeholder="Search ..."></div>
-      <div><button v-on:click="clearAll">Reset all</button></div>
+      <div>
+        <input class="search" v-model="phrase" placeholder="Search ...">
+      </div>
+      <div>
+        <button v-on:click="clearAll">Reset all</button>
+      </div>
     </div>
 
-    <Alphabet model="letter = $event"/>
+    <Alphabet :letter="letter" v-on:click="letter = $event"/>
 
     <table class="gameTable">
       <tr>
-        <th
-          v-for="col in columns"
-          v-bind:class="col"
-          :key="col"
-          :data-column="col"
-          @click="sort"
-        >
+        <th v-for="col in columns" v-bind:class="col" :key="col" :data-column="col" @click="sort">
           {{col}}<span :data-active="sortBy == col" :data-dir="sortDir" class="sortArrow"></span>
         </th>
       </tr>
@@ -25,9 +23,11 @@
     </table>
 
     <div class="fill">
-      <div v-if="loading"><Spinner/></div>
+      <div v-if="loading">
+        <Spinner/>
+      </div>
       <div v-else-if="error" class="error">{{ error }}</div>
-      <div v-else-if="!gameList.length" >No results</div>
+      <div v-else-if="!gameList.length">No results</div>
     </div>
   </div>
 </template>
@@ -54,7 +54,7 @@ export default {
     sortBy: "name",
     phrase: null,
     status: null,
-    letter: null,
+    letter: "",
     gameList: []
   }),
 
@@ -73,19 +73,21 @@ export default {
       this.error = null;
       this.loading = true;
       try {
-        const {body: data} = await this.$http.get("/api/games", {params: {
-          sort: this.sortDir + this.sortBy,
-          letter: this.letter,
-          phrase: this.phrase,
-          status: this.status
-        }})
+        const { body: data } = await this.$http.get("/api/games", {
+          params: {
+            sort: this.sortDir + this.sortBy,
+            letter: this.mapLetter(this.letter),
+            phrase: this.phrase,
+            status: this.status
+          }
+        });
 
-        this.gameList = data
+        this.gameList = data;
       } catch (ex) {
-        this.gameList = []
-        this.error = ex.body.message
+        this.gameList = [];
+        this.error = ex.body.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
     sort: function(e) {
@@ -106,6 +108,10 @@ export default {
       this.status = null;
       this.letter = null;
       this.fetchGames();
+    },
+    mapLetter(letter) {
+      if (letter == "0-9") return "0";
+      return letter;
     }
   }
 };
@@ -128,7 +134,7 @@ export default {
     width: 100%;
   }
   .updated {
-    display:none;
+    display: none;
   }
   .issue {
     display: none;
@@ -139,7 +145,7 @@ export default {
 }
 
 .searchBar {
-  display:grid;
+  display: grid;
   grid-template-columns: auto max-content;
   column-gap: 2em;
   margin-top: 1em;

@@ -13,9 +13,11 @@
 <script>
 export default {
   name: "Alphabet",
+  props: {
+    letter: { type: Object, required: true }
+  },
   data: () => ({
-    alphabet: [],
-    letter: null
+    alphabet: []
   }),
   mounted() {
     this.alphabet = this.generateAlphabet();
@@ -33,15 +35,15 @@ export default {
     },
     letterSelected(e) {
       const clicked = e.currentTarget.dataset["letter"];
+      
+      let letter;
       if (clicked == this.letter) {
-        this.letter = null;
+        letter = null;
       } else {
-        this.letter = clicked;
+        letter = clicked;
       }
 
-      let selected = this.letter
-      if (selected == "0-9") selected = "0"
-      this.$emit("selected", selected)
+      this.$emit("click", letter)
     }
   }
 };

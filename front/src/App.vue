@@ -36,6 +36,12 @@ body {
     padding: 0;
 }
 
+@media only screen and (max-width: 950px) {
+  body {
+    margin: 0;
+  }
+}
+
 #nav {
   a {
     font-weight: bold;

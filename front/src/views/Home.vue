@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="title">Avocado compability list</div>
+    <div class="title">Avocado compatibility list</div>
     <div class="desc">Links: 
       <a href="https://github.com/JaCzekanski/Avocado">Avocado</a>
       <a href="https://github.com/JaCzekanski/avocado-db">avocado-db</a>
