@@ -5,8 +5,6 @@ RUN adduser -D -g '' $APPLICATION_USER
 
 RUN mkdir /app
 RUN chown -R $APPLICATION_USER /app
-COPY ./StoredCredential /app/StoredCredential
-RUN chmod 777 /app/StoredCredential
 
 USER $APPLICATION_USER
 
