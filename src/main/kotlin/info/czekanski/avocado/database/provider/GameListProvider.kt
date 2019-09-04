@@ -51,7 +51,7 @@ class GameListProvider {
         return when {
             title.endsWith("(U)") -> Region.NTSC
             title.endsWith("(J)") -> Region.NTSCJ
-            title.endsWith("(P)") -> Region.PAL
+            title.endsWith("(E)") -> Region.PAL
             else -> Region.UNKNOWN
         }
     }
@@ -98,8 +98,12 @@ class GameListProvider {
 
         scope.launch {
             while (true) {
-                lock.write {
-                    this@GameListProvider.list = downloadList()
+                try {
+                    lock.write {
+                        this@GameListProvider.list = downloadList()
+                    }
+                } catch (ex: Throwable) {
+                    ex.printStackTrace();
                 }
 
                 delay(Duration.ofMinutes(5))
