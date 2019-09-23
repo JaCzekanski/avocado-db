@@ -5,4 +5,4 @@ services:
     build: .
     ports:
       - "127.0.0.1:8082:8082"
-    mem_limit: 64M
+    mem_limit: 128M
